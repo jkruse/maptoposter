@@ -13,6 +13,7 @@ import argparse
 from pathlib import Path
 from hashlib import md5
 import pickle
+import math
 
 class CacheError(Exception):
     """Raised when a cache operation fails."""
@@ -32,7 +33,7 @@ def calculate_bbox_3_4_aspect(lat, lon, dist):
     """
     # For a 3:4 aspect ratio with height as the reference:
     # - Height (north-south): 2 * dist
-    # - Width (east-west): (3/4) * 2 * dist = 1.5 * dist
+    # - Width (east-west): 0.75 * (2 * dist) = 1.5 * dist total width, or 0.75 * dist on each side
     
     # Approximate conversion: 1 degree latitude ≈ 111,000 meters
     meters_per_degree_lat = 111000
@@ -43,7 +44,6 @@ def calculate_bbox_3_4_aspect(lat, lon, dist):
     # Calculate longitude offset (width dimension) - needs cosine correction for latitude
     # At the equator, 1 degree longitude ≈ 111,000 meters
     # At other latitudes: meters_per_degree_lon = 111,000 * cos(latitude)
-    import math
     meters_per_degree_lon = meters_per_degree_lat * math.cos(math.radians(lat))
     
     # Width should be 3/4 of height, so the horizontal distance is (3/4) * dist
